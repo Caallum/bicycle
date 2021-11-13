@@ -1,0 +1,12 @@
+import BicycleError from "../Bicycle.Error.js";
+import BaseEvent from "../structures/BaseEvent.js";
+
+export default class Event extends BaseEvent {
+    constructor() {
+        super("Event");
+    }
+
+    async run(client) {
+        // Code...
+    }
+}
