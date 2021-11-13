@@ -2,9 +2,6 @@
   "dependencies": {
     "discord.js": "^13.3.1"
   },
-  "devDependencies": {
-    "@turph/quickmongo": "^1.4.3"
-  },
   "name": "bicycle",
   "version": "1.0.0",
   "main": "src/Bicycle.js",
@@ -15,5 +12,9 @@
   "keywords": [],
   "author": "turph",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "mongoose": "^6.0.12",
+    "pify": "^5.0.0"
+  }
 }

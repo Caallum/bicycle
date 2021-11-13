@@ -1,5 +1,7 @@
 import BicycleError from "../Bicycle.Error.js";
 import BaseEvent from "../structures/BaseEvent.js";
+import Bicycle from "../Bicycle.js";
+import { ClientVoiceManager } from "discord.js";
 
 export default class MessageCreateEvent extends BaseEvent {
     constructor() {
@@ -9,9 +11,7 @@ export default class MessageCreateEvent extends BaseEvent {
     async run(client, message) {
         if(message.author.bot) return;         
        
-        if(message.channel.type == "DM") {
-            return message.channel.send({ content: "Modmail coming soon..." })
-        }
+        client.modmail.handleMessage(message);
 
     }
 }

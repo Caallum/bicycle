@@ -1,5 +1,6 @@
 import BicycleError from "../Bicycle.Error.js";
 import BaseEvent from "../structures/BaseEvent.js";
+import Bicycle from "../Bicycle.js";
 
 export default class ReadyEvent extends BaseEvent {
     constructor() {
