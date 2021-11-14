@@ -7,6 +7,7 @@ export default async function sendEmbed(channel, title, description, footer = {}
     const embed = new MessageEmbed()
         .setTitle(title)
         .setDescription(description)
+        .setColor('YELLOW')
         .setFooter(footer.text ?? "Bicycle", footer.icon ?? Bicycle.client.user.avatarURL({ dynamic: true, format: "png" }));
-    return channel.send({ embeds: [embed] });
+    return channel.send({ embeds: [embed] }).catch(() => { });
 }

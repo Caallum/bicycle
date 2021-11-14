@@ -1,6 +1,7 @@
 import EventEmitter from 'events';
 import mongo from "mongoose";
 import pify from 'pify';
+import BicycleError from './Bicycle.Error.js';
 
 export default class database extends EventEmitter {
 	constructor(url, opts) {
@@ -13,19 +14,19 @@ export default class database extends EventEmitter {
                 }
 			)
 			.then(() => {
-				this.emit('connected', '[DATABASE] Successfully connected to Database');
+				this.emit('connected', '[BICYCLE DB] Successfully connected to Database');
 			})
 			.catch(err => {
-				this.emit('error', '[DATABASE] ' + err);
+				this.emit('error', '[BICYCLE DB] ' + err);
 			});
 		this.db = mongo.connection;
 
 		if (typeof opts !== 'object') {
-			return this.emit('error', '[DATABASE] Options must be in object form');
+			return this.emit('error', '[BICYCLE DB] Options must be in object form');
 		}
 
 		if (!opts.name) {
-			return this.emit('error', '[DATABASE] Please define a collection name');
+			return this.emit('error', '[BICYCLE DB] Please define a collection name');
 		}
 
 		this.collection = this.db.collection(opts.name);
@@ -45,7 +46,7 @@ export default class database extends EventEmitter {
 			{}
 		);
 
-		this.db.on('error', err => this.emit('error', err));
+		this.db.on('error', err => this.emit('error', `[BICYCLE DB] ${err}`));
 	}
 
 	async get(key) {

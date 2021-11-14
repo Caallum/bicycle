@@ -8,6 +8,7 @@ import config from "./config.js";
 
 let prefix = config.prefix;
 
+
 export default class BicycleModmail {
     constructor(client) {
         this.client = client;
@@ -27,13 +28,15 @@ export default class BicycleModmail {
         if(message.channel.parentId == config?.modmail?.categoryID) {
             return await this.sendToUser(message);
         } 
+
+        return;
     }
 
     async initializeModmail(message) {
         const blacklist = await this.client.db.get(`modmail.blacklist-${message.author.id}`)
 
         if(blacklist) {
-            return sendEmbed(message.channel, 'Modmail Blacklist', `You have been blacklisted from making a ModMail ticket!\n\n**Moderator:** ${blacklist.moderator}\n**Reason:** ${blacklist.reason}\n**Date: ${blacklist.date}`);
+            return sendEmbed(message.channel, 'Modmail Blacklist', `You have been blacklisted from making a ModMail ticket!\n\n**Moderator:** ${blacklist.moderator}\n**Reason:** ${blacklist.reason}\n**Date:** ${blacklist.date}`);
         }
 
         const guild = await this.client.guilds.fetch(config?.modmail?.guildID);
@@ -61,14 +64,14 @@ export default class BicycleModmail {
         const informationObject = {
             channel: channel.id,
             reason: message.content,
-            date: date
+            date: date()
         };
 
         const channelObject = {
             id: message.author.id,
             reason: message.content,
             claimed: 'x',
-            date: date,
+            date: date(),
         }
 
         await this.client.db.set(`modmail-${message.author.id}`, informationObject);
@@ -82,7 +85,7 @@ export default class BicycleModmail {
         let blacklistObject = {
             moderator: moderator,
             reason: reason,
-            date: date
+            date: date()
         }
         await this.client.db.set(`modmail.blacklist-${user.id}`, blacklistObject)
     }
@@ -92,7 +95,7 @@ export default class BicycleModmail {
         const blacklist = await this.client.db.get(`modmail.blacklist-${message.author.id}`)
 
         if(blacklist) {
-            return sendEmbed(message.channel, 'Modmail Blacklist', `You have been blacklisted from making a ModMail ticket!\n\n**Moderator:** ${blacklist.moderator}\n**Reason:** ${blacklist.reason}\n**Date: ${blacklist.date}`);
+            return sendEmbed(message.channel, 'Modmail Blacklist', `You have been blacklisted from making a ModMail ticket!\n\n**Moderator:** ${blacklist.moderator}\n**Reason:** ${blacklist.reason}\n**Date:** ${blacklist.date}`);
         }
         
         const channel = await this.client.channels.fetch(information.channel).catch(() => {
@@ -109,10 +112,41 @@ export default class BicycleModmail {
         return message.react(`✔️`);
     }
 
+    async closeTicket(message, reason) {
+        const user = await this.client.db.get(`modmail.channel-${message.channel.id}`);
+        let discUser = user ? await this.client.users.fetch(user.id) : undefined;
+        await this.client.db.delete(`modmail.channel-${message.channel}`)
+        await this.client.db.delete(`modmail-${user.id}`);
+        sendEmbed(message.channel, "Closing in", `10 seconds\n\n${reason}`)
+
+        setTimeout(() => {
+            setTimeout(() => {
+                sendEmbed(message.channel, "Closing in", "5 seconds\n\n" + reason);
+                setTimeout(() => {
+                    sendEmbed(message.channel, "Closing in", "4 seconds\n\n" + reason);
+                    setTimeout(() => {
+                        sendEmbed(message.channel, "Closing in", "3 seconds\n\n" + reason);
+                        setTimeout(() => {
+                            sendEmbed(message.channel, "Closing in", "2 seconds\n\n" + reason);
+                            setTimeout(() => {
+                                sendEmbed(message.channel, "Closing in", "1 second\n\n" + reason);
+                                setTimeout(async () => {
+                                    if(discUser) await sendEmbedToUser(discUser, "Ticket Closed", "Thank yoy for contacting support. Your ticket has been closed!\n\n" + reason)
+                                    await sendEmbed(message.channel, "Closing Channel", "This channel will be deleted\n\n" + reason);
+                                    message.channel.delete();
+                                }, 1000);
+                            }, 1000);
+                        }, 1000);
+                    }, 1000);
+                }, 1000);
+            }, 1000)
+        }, 6000)
+    }
+
     async sendToUser(message) {
 
 
-        const user = this.client.db.get(`modmail.channel-${message.channel}`);
+        const user = await this.client.db.get(`modmail.channel-${message.channel.id}`);
 
         if(!user) return;
 
@@ -148,7 +182,9 @@ export default class BicycleModmail {
             return;
         }
 
-        if(!user.claimed) {
+        if(message.content.startsWith(config.prefix)) return;
+
+        if(user.claimed == 'x') {
             return sendEmbed(message.channel, "Error Occured", "This channel has not been claimed! Use the command `" + prefix  + "claim` to claim it");
         }
 

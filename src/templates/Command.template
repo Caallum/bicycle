@@ -1,0 +1,18 @@
+import BicycleError from "../../Bicycle.Error.js";
+import BaseCommand from "../../structures/BaseCommand.js";
+
+export default class Command extends BaseCommand {
+    constructor() {
+        super(
+            'name',
+            'description',
+            ['aliases'],
+            'category',
+            testing
+        )
+    }
+
+    async run(client, message, args) {
+        // Code...
+    }
+}
