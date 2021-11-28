@@ -21,7 +21,7 @@ export default class BlacklistCommand extends BaseCommand {
 
     async run(client, message, args) {
 
-        if(!message.member.roles.cache.has(config.modmail.staffID)) return sendEmbed(message.channel, "Permission Error", "You do not have permission to do that!");
+        if(!message.member.roles.cache.some(role => config.modmail.staffID.includes(role.id))) return sendEmbed(message.channel, "Permission Error", "You do not have permission to do that!");
         
         if(!args[0]) return sendEmbed(message.channel, "User not found", "I cannot find that user, please try again!");
 

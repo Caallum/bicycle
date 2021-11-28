@@ -1,5 +1,5 @@
 # Bicycle
 
-> An easy to use Modmail/Moderation Discod Bot
+> Modmail and Moderation Discord Bot
 
 ## Made by TURPH

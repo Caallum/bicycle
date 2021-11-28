@@ -27,7 +27,7 @@ class Bicycle {
 
     async registerModmail() {
         this.client.modmail = new BicycleModmail(this.client);
-    }
+    }ks
 
     async registerDatabase() {
         this.client.db = new BicycleDatabase(config.mongoURI, {
