@@ -7,17 +7,24 @@ import BicycleError from './Bicycle.Error.js';
 import BicycleModmail from './Bicycle.ModMail.js';
 import BicycleDatabase from './Bicycle.Database.js';
 
+import dotenv from 'dotenv'
+dotenv.config();
+
 class Bicycle { 
     constructor() { 
         this.config = config;
+        this.checkReplit()
+
         this.client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.GUILD_MESSAGES ], partials: ["CHANNEL"]});
 
         this.init();
         this.client.commands = new Collection();
+        this.token = this.config.token;
+        this.mongoURI = this.config.mongoURI;
     }
 
     async init() {
-        this.client.login(this.config.token);
+        this.client.login(this.token);
 
         await this.registerEvents();
         await this.registerDatabase();
@@ -30,7 +37,7 @@ class Bicycle {
     }ks
 
     async registerDatabase() {
-        this.client.db = new BicycleDatabase(config.mongoURI, {
+        this.client.db = new BicycleDatabase(this.mongoURI, {
             name: 'BicycleDBV2'
         });
         this.client.db
@@ -64,6 +71,13 @@ class Bicycle {
                 }
             }
         });
+    }
+
+    async checkReplit() {
+        if (typeof config.replit == "boolean" && config.replit == true) {
+            this.token = process.env.token;
+            this.mongoURI = process.env.mongoURI;
+        }
     }
 }
 
